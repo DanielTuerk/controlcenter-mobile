@@ -24,11 +24,11 @@
         </activity>
         <activity
             android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings"
-            android:parentActivityName=".BrowserActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="wbz.net.controlcenter.mobile.BrowserActivity" />
+            android:label="@string/title_activity_settings">
+            <!--            android:parentActivityName=".BrowserActivity">-->
+            <!--            <meta-data-->
+            <!--                android:name="android.support.PARENT_ACTIVITY"-->
+            <!--                android:value="wbz.net.controlcenter.mobile.BrowserActivity" />-->
         </activity>
     </application>
 

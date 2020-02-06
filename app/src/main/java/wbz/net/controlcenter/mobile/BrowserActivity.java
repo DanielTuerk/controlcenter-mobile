@@ -1,49 +1,42 @@
 package wbz.net.controlcenter.mobile;
 
 import android.annotation.SuppressLint;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import android.app.Activity;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.view.MotionEvent;
-import android.view.View;
+import android.support.annotation.RequiresApi;
+import android.view.Window;
 import android.webkit.WebView;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * An full-screen activity that shows a {@link WebView} for the control center web app.
  */
-public class BrowserActivity extends AppCompatActivity {
+public class BrowserActivity extends Activity {
 
-    private WebView webView;
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_browser);
 
-        webView = findViewById(R.id.webview);
+        WebView webView = findViewById(R.id.webview);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setAppCacheEnabled(true);
         webView.getSettings().setDomStorageEnabled(true);
-        webView.loadUrl("http://192.168.178.21:8888/");
+        webView.getSettings().setSupportMultipleWindows(false);
+        final String uri = BrowserUriPref.read(this);
+        webView.loadUrl(uri);
 
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-
-
-    }
-
-
-    @SuppressLint("InlinedApi")
-    private void show() {
-        // Show the system bar
-        webView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
-
+        scheduler.scheduleAtFixedRate(new CheckConnectionRunnable(this, uri), 0, 2, TimeUnit.MINUTES);
     }
 
 }
